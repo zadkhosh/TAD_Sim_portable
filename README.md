@@ -228,12 +228,17 @@ This fork contains several critical stability and portability patches that allow
     cd TAD_Sim_portable
     git lfs pull
     ```
+    
+2. **Build the Stable Package (Inside Docker):**
 
-2.  **Build the Stable Package (Inside Docker):**
-    ```bash
-    docker build . -t tadsim/desktop:v1.0
-    docker run -it --rm --network host -v "$(pwd)":/build -w /build tadsim/desktop:v1.0 ./build.sh
-    ```
+   ```bash
+   # Build the environment using local dependencies (No apt-get network errors)
+   # Using --network host allows the build to reach your host's proxy (e.g., 127.0.0.1:7897)
+   docker build -f Dockerfile_local . -t tadsim/desktop:v1.0 --network host
+
+   # Run the build script to generate the portable tarball
+   docker run -it --rm --network host -v "$(pwd)":/build -w /build tadsim/desktop:v1.0 ./build.sh
+   ```
 
 3.  **Deploy to Remote Machine:**
     *   Transfer `build/tadsim_portable_linux_x64.tar.gz` to your target machine.

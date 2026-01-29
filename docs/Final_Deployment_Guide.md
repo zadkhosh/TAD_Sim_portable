@@ -27,13 +27,14 @@ sudo apt-get install gconf2 libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libd
 
 Follow these steps to generate a "clean" portable package:
 
-1.  **Enter the Docker Container:**
+    Use the specialized local Dockerfile with --network host to avoid proxy errors:
     ```bash
-    docker run -it --rm --network host -v "$(pwd)":/build -w /build tadsim/desktop:v1.0 /bin/bash
+    docker build -f Dockerfile_local . -t tadsim/desktop:v1.0 --network host
     ```
-2.  **Run the Build:**
+
+2.  **Run the Build Script:**
     ```bash
-    ./build.sh
+    docker run -it --rm --network host -v "$(pwd)":/build -w /build tadsim/desktop:v1.0 ./build.sh
     ```
 3.  **Find your Artifact:**
     Your portable package is located at:
