@@ -107,6 +107,8 @@ RUN apt-get update \
 # Force cache invalidation for library copy (timestamped to ensure uniqueness)
 ARG CACHEBUST=20260120_1545
 COPY tools/docker_libraries/* ./
+COPY tools/verify_artifacts.sh ./
+RUN chmod +x verify_artifacts.sh && ./verify_artifacts.sh
 
 # Install ninja
 # RUN wget -O ninja-linux.zip https://github.com/ninja-build/ninja/releases/download/v${NINJA_VERSION}/ninja-linux.zip \
