@@ -1,16 +1,16 @@
 # TAD Sim
 
-# 1. 概述
+## 1. 概述
 
 腾讯自动驾驶仿真系统 **TAD Sim** (Tencent Autonomous Driving Simulation) **单机版** 是腾讯自动驾驶以建立更加安全和高效的自动驾驶测试工具为目标, 为自动驾驶系统研发和验证而量身定做的跨平台分布式系统.
 
-它基于腾讯强大的游戏引擎、虚拟现实、云游戏技术, 集成工业级的车辆动力学模型和专业的渲染引擎, 辅以三维重建技术和虚实一体交通流, 可以完成感知、决策、控制算法等实车上全部模块的闭环仿真验证, 极大地降低了研发成本并缩短了研发实际周期.
+它基于腾讯强大的游戏引擎、虚拟现实、云游戏技术, 集成工业级的车辆动力学模型 and 专业的渲染引擎, 辅以三维重建技术和虚实一体交通流, 可以完成感知、决策、控制算法等实车上全部模块的闭环仿真验证, 极大地降低了研发成本并缩短了研发实际周期.
 
-# 2. 整体架构
+## 2. 整体架构
 
 <div align="center"><img src="./docs/images/tadsim_architecture.png" alt="" width="900px"></div><br>
 
-# 3. 入门指南
+## 3. 入门指南
 
 ## 3.1 目录结构
     --adapter                     消息桥接
@@ -27,7 +27,6 @@
     --Dockerfile_local            定义构建镜像所需指令和配置 - desktop 排除网络限制
     --Dockerfile_display          定义构建镜像所需指令和配置 - display 模块编译
     --Dockerfile_display_runtime  定义构建镜像所需指令和配置 - display 模块运行 (非必须)
-
 
 ## 3.2 环境准备
 
@@ -210,6 +209,9 @@
 ## 3.7 经验积累
 存放于 docs/experience 文件夹. 这里记录了项目开发过程中在各个方面所积累的宝贵经验, 包括但不限于技术选型的考量, 高效的编程实践、优化策略等.
 
+## 3.8 问题排查记录
+存放于 docs/troubleshooting 文件夹. 当项目遇到问题时, 再此将问题的详细描述、排查过程、解决方案以及总结反思记录在此. 这不仅有助于快速定位和解决当前问题, 还能为未来可能出现的类似问题提供解决方案的思路, 提升项目的稳定性和可靠性.
+
 ## 3.9 Stable & Portable Version (Recommended for Offline/Remote Deployment)
 
 This fork contains several critical stability and portability patches that allow **TAD_Sim** to be built and run on diverse Linux environments without internet access.
@@ -220,7 +222,7 @@ This fork contains several critical stability and portability patches that allow
 *   **True Portability:** Generates a 993MB "Golden Package" that carries its own 3D models and libraries.
 *   **Self-Correcting:** Includes a smart deployment script that fixes absolute paths and syncs configurations automatically.
 
-### 3.9.1 Quick Start Procedure
+### 3.9.2 Quick Start Procedure
 
 1.  **Clone the Repository:**
 
@@ -235,7 +237,7 @@ This fork contains several critical stability and portability patches that allow
     If your connection keeps dropping, use this "Shallow & Deep" method:
     ```bash
     # 1. Get ONLY the latest version of the code (Very fast, ignores history)
-    GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 https://github.com/zadkhosh/TAD_Sim_portable
+    GIT_LFS_SKIP_SMUDGE=1 git clone https://github.com/zadkhosh/TAD_Sim_portable
     cd TAD_Sim_portable
 
     # 2. Download large assets (Resumes automatically if it fails)
@@ -243,20 +245,42 @@ This fork contains several critical stability and portability patches that allow
     ```
 
     **Option C: Total Offline (Physical Transfer)**
-    If Git is blocked or timing out completely:
-    1.  Download the repository as a **ZIP** from the GitHub website on a machine that has internet.
-    2.  Transfer the folder via USB/Internal Network.
-    3.  Run `git lfs pull` once you have a temporary connection, or copy the `tad_deps/` folder from a verified build.
-2. **Build the Stable Package (Inside Docker):**
+    If `git lfs pull` is stuck, don't wait. Use the **Physical Sync** method:
+    - On a machine with the data, zip the brain: `tar -czf lfs_data.tar.gz .git/lfs/objects`
+    - Move it to the new system and unzip: `tar -xzf lfs_data.tar.gz`
+    - Run: `git lfs install && git lfs checkout`
 
-   ```bash
-   # Build the environment using local dependencies (No apt-get network errors)
-   # Using --network host allows the build to reach your host's proxy (e.g., 127.0.0.1:7897)
-   docker build -f Dockerfile_local . -t tadsim/desktop:v1.0 --network host
+2.  **Build the Stable Package (Inside Docker):**
 
-   # Run the build script to generate the portable tarball
-   docker run -it --rm --network host -v "$(pwd)":/build -w /build tadsim/desktop:v1.0 ./build.sh
-   ```
+    **2.1 Verify Integrity:**
+    Before building, run the safety check to ensure no files were corrupted during transfer:
+    ```bash
+    chmod +x tools/verify_artifacts.sh
+    ./tools/verify_artifacts.sh
+    ```
+    *If any [CORRUPT] or [MISSING] errors appear, replace the files from a healthy source.*
+
+    **2.2 Run the Build:**
+    ```bash
+    # Build the environment using local dependencies (No apt-get network errors)
+    # Using --network host allows the build to reach your host's proxy (e.g., 127.0.0.1:7897)
+    docker build -f Dockerfile_local . -t tadsim/desktop:v1.0 --network host
+
+    # Run the build script to generate the portable tarball
+    docker run -it --rm --network host -v "$(pwd)":/build -w /build tadsim/desktop:v1.0 /bin/bash -c "./build.sh"
+    ```
+
+    **2.3 Deploy Runtime Safely:**
+    Run the deployment script to fix absolute paths and sync catalogs:
+    ```bash
+    ./resources/app/service/deploy_runtime.sh
+    ```
+
+    **2.4 Run:**
+    ```bash
+    cd resources/app/
+    ./tadsim
+    ```
 
 3.  **Deploy to Remote Machine:**
     *   Transfer `build/tadsim_portable_linux_x64.tar.gz` to your target machine.
@@ -266,20 +290,31 @@ This fork contains several critical stability and portability patches that allow
 
 ### 3.9.3 How to Reset / Start Scratch
 If you encounter "Error Code 2" or want to perform a clean reinstall on your remote machine:
+**1. Stop All Processes**
 ```bash
-pkill -f txsim; pkill -f txSimService
-rm -rf ~/.config/tadsim
-# Now re-extract the tarball and run deploy_runtime.sh
+pkill -f txsim
+pkill -f txSimService
 ```
 
-For more detailed technical info, see the **[TAD_Sim Master Guide](./docs/TAD_Sim_Master_Guide.md)** or **[Final Deployment Guide](./docs/Final_Deployment_Guide.md)**.
+**2. Wipe Configuration & Cache**
+```bash
+rm -rf ~/.config/TAD_Sim
+rm -rf ~/.config/tadsim
+```
 
-## 3.8 问题排查记录
-存放于 docs/troubleshooting 文件夹. 当项目遇到问题时, 再此将问题的详细描述、排查过程、解决方案以及总结反思记录在此. 这不仅有助于快速定位和解决当前问题, 还能为未来可能出现的类似问题提供解决方案的思路, 提升项目的稳定性和可靠性.
+**3. Cleanup Docker**
+Remove any old images or broken containers:
+```bash
+docker rm -f $(docker ps -aq) 2>/dev/null
+docker rmi -f tadsim/desktop:v1.0 2>/dev/null
+```
 
-# 4. 贡献
+*Now start again from the beginning.*
 
+For more detailed technical info, see the **[Final Deployment Guide](./docs/Final_Deployment_Guide.md)**.
 
-# 5. 版权
+## 4. 贡献
+
+## 5. 版权
 
 许可证遵循 [Apache v2.0 协议]. 更多细节请访问 [LICENSE](./LICENSE).
