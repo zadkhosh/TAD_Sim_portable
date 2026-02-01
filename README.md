@@ -220,15 +220,33 @@ This fork contains several critical stability and portability patches that allow
 *   **True Portability:** Generates a 993MB "Golden Package" that carries its own 3D models and libraries.
 *   **Self-Correcting:** Includes a smart deployment script that fixes absolute paths and syncs configurations automatically.
 
-### 3.9.2 Quick Start Procedure
+### 3.9.1 Quick Start Procedure
 
-1.  **Clone with LFS (Mandatory):**
+1.  **Clone the Repository:**
+
+    **Option A: Standard (Fast Internet)**
     ```bash
     git clone https://github.com/zadkhosh/TAD_Sim_portable
     cd TAD_Sim_portable
     git lfs pull
     ```
-    
+
+    **Option B: Resilient (For Unstable/Slow Internet)**
+    If your connection keeps dropping, use this "Shallow & Deep" method:
+    ```bash
+    # 1. Get ONLY the latest version of the code (Very fast, ignores history)
+    GIT_LFS_SKIP_SMUDGE=1 git clone --depth 1 https://github.com/zadkhosh/TAD_Sim_portable
+    cd TAD_Sim_portable
+
+    # 2. Download large assets (Resumes automatically if it fails)
+    git lfs pull
+    ```
+
+    **Option C: Total Offline (Physical Transfer)**
+    If Git is blocked or timing out completely:
+    1.  Download the repository as a **ZIP** from the GitHub website on a machine that has internet.
+    2.  Transfer the folder via USB/Internal Network.
+    3.  Run `git lfs pull` once you have a temporary connection, or copy the `tad_deps/` folder from a verified build.
 2. **Build the Stable Package (Inside Docker):**
 
    ```bash
