@@ -1,3 +1,4 @@
 *
 !tools/docker_libraries
+!tools/verify_artifacts.sh
 !Dockerfile*

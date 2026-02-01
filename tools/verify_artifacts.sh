@@ -9,7 +9,6 @@ LIB_DIR="$TOOLS_DIR/docker_libraries"
 # Official MD5 Sums for Version 1.0.2 Dependencies
 declare -A CHECKSUMS=(
     ["$LIB_DIR/boost_1_75_0.tar.bz2"]="ea217ed7c4414e93d44106c316966ae1"
-    ["$TOOLS_DIR/vcredist_x64_2022.exe"]="1d545507009cc4ec7409c1bc6e93b17b"
     ["$LIB_DIR/cereal-1.3.0.tar.gz"]="4342e811f245403646c4175258f413f1"
     ["$LIB_DIR/chrono-8.0.0.tar.gz"]="60f00d60b9b6b9448630a4861f6d7207"
     ["$LIB_DIR/cmake-3.20.1-linux-x86_64.sh"]="a0ff175aa72cc4089e40ddefe9f14e13"

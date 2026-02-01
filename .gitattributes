@@ -30,3 +30,4 @@ datas/* text eol=crlf
 *.png binary
 *.ts text
 tad_deps/** filter=lfs diff=lfs merge=lfs -text
+tools/docker_libraries/cmake-3.20.1-linux-x86_64.sh filter=lfs diff=lfs merge=lfs -text
